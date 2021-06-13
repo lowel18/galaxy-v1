@@ -23,10 +23,60 @@ sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite, oth
     otherSprite.destroy()
     info.changeScoreBy(10)
 })
+function Enemy_Bonus (MiScore: number) {
+    Enemigo_1 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . 8 . . . . . . 8 . . . . 
+        . . . . 8 8 . 8 8 . 8 8 . . . . 
+        . . . . 8 . 8 8 8 8 . 8 . . . . 
+        . . . . 9 9 8 9 9 8 9 9 . . . . 
+        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+        . . . . . . 8 8 8 8 . . . . . . 
+        . . . . . . 8 . . 8 . . . . . . 
+        . . . . . 9 8 9 9 8 9 . . . . . 
+        . . . . . 9 8 9 9 8 9 . . . . . 
+        . . . . . 9 8 8 8 8 9 . . . . . 
+        . . . . . 9 . . . . 9 . . . . . 
+        . . . . . 8 . . . . 8 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Enemy)
+    Enemigo_1.setPosition(randint(5, 120), 0)
+    Enemigo_1.setVelocity(0, 25)
+    if (MiScore % 100 == 0 && MiScore != 0) {
+        Bonus()
+    }
+}
+function Bonus () {
+    for (let index = 0; index < 5; index++) {
+        Enemigo_2 = sprites.create(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . 4 4 . . . . . . 4 4 . . . 
+            . . . 4 4 7 . 7 7 . 8 4 4 . . . 
+            . . . . 7 . 8 7 7 8 . 8 . . . . 
+            . . . . 7 7 8 7 7 8 7 7 . . . . 
+            . . 4 4 8 8 7 4 4 7 8 8 4 4 . . 
+            . . . . . 7 8 4 4 8 7 . . . . . 
+            . . . . . . 8 4 4 8 . . . . . . 
+            . . . . . 4 8 7 7 8 4 . . . . . 
+            . . . . . 4 4 7 7 4 4 . . . . . 
+            . . . . 7 7 4 8 8 4 7 7 . . . . 
+            . . . . . 7 . 4 4 . 7 . . . . . 
+            . . . . . 8 . . . . 8 . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, SpriteKind.Enemy)
+        Enemigo_2.setPosition(randint(5, 120), 0)
+        Enemigo_2.setVelocity(randint(-25, 25), 35)
+    }
+}
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     otherSprite.destroy(effects.spray, 500)
     info.changeLifeBy(-1)
 })
+let Enemigo_2: Sprite = null
 let Enemigo_1: Sprite = null
 let Proyectil_1: Sprite = null
 let Nave1: Sprite = null
@@ -175,30 +225,11 @@ scene.setBackgroundImage(img`
     ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     `)
-game.onUpdateInterval(2000, function () {
-    Enemigo_1 = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . 8 . . . . . . 8 . . . . 
-        . . . . 8 8 . 8 8 . 8 8 . . . . 
-        . . . . 8 . 8 8 8 8 . 8 . . . . 
-        . . . . 9 9 8 9 9 8 9 9 . . . . 
-        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-        . . . . . . 8 8 8 8 . . . . . . 
-        . . . . . . 8 . . 8 . . . . . . 
-        . . . . . 9 8 9 9 8 9 . . . . . 
-        . . . . . 9 8 9 9 8 9 . . . . . 
-        . . . . . 9 8 8 8 8 9 . . . . . 
-        . . . . . 9 . . . . 9 . . . . . 
-        . . . . . 8 . . . . 8 . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Enemy)
-    Enemigo_1.setPosition(randint(0, 120), 0)
-    Enemigo_1.setVelocity(0, 25)
+game.onUpdateInterval(1000, function () {
+    Enemy_Bonus(info.score())
 })
 forever(function () {
-    if (info.score() == 100) {
+    if (info.score() == 1000) {
         game.over(true, effects.hearts)
     }
 })
