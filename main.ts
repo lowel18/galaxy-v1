@@ -1,3 +1,25 @@
+function Enemies (MiScore: number) {
+    Enemigo_1 = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . 8 . . . . . . 8 . . . . 
+        . . . . 8 8 . 8 8 . 8 8 . . . . 
+        . . . . 8 . 8 8 8 8 . 8 . . . . 
+        . . . . 9 9 8 9 9 8 9 9 . . . . 
+        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
+        . . . . . . 8 8 8 8 . . . . . . 
+        . . . . . . 8 . . 8 . . . . . . 
+        . . . . . 9 8 9 9 8 9 . . . . . 
+        . . . . . 9 8 9 9 8 9 . . . . . 
+        . . . . . 9 8 8 8 8 9 . . . . . 
+        . . . . . 9 . . . . 9 . . . . . 
+        . . . . . 8 . . . . 8 . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.Enemy)
+    Enemigo_1.setPosition(randint(5, 120), 0)
+    Enemigo_1.setVelocity(0, 25)
+}
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     Proyectil_1 = sprites.createProjectileFromSprite(img`
         . . . . . . . . . . . . . . . . 
@@ -23,29 +45,9 @@ sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite, oth
     otherSprite.destroy()
     info.changeScoreBy(10)
 })
-function Enemy_Bonus (MiScore: number) {
-    Enemigo_1 = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . 8 . . . . . . 8 . . . . 
-        . . . . 8 8 . 8 8 . 8 8 . . . . 
-        . . . . 8 . 8 8 8 8 . 8 . . . . 
-        . . . . 9 9 8 9 9 8 9 9 . . . . 
-        . . . 8 8 8 8 8 8 8 8 8 8 . . . 
-        . . . . . . 8 8 8 8 . . . . . . 
-        . . . . . . 8 . . 8 . . . . . . 
-        . . . . . 9 8 9 9 8 9 . . . . . 
-        . . . . . 9 8 9 9 8 9 . . . . . 
-        . . . . . 9 8 8 8 8 9 . . . . . 
-        . . . . . 9 . . . . 9 . . . . . 
-        . . . . . 8 . . . . 8 . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Enemy)
-    Enemigo_1.setPosition(randint(5, 120), 0)
-    Enemigo_1.setVelocity(0, 25)
-    if (MiScore % 100 == 0 && MiScore != 0) {
-        Bonus()
+function ScoreChange (MyScore: number) {
+    while (MyScore == info.score()) {
+        pause(100)
     }
 }
 function Bonus () {
@@ -77,8 +79,8 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
     info.changeLifeBy(-1)
 })
 let Enemigo_2: Sprite = null
-let Enemigo_1: Sprite = null
 let Proyectil_1: Sprite = null
+let Enemigo_1: Sprite = null
 let Nave1: Sprite = null
 Nave1 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
@@ -226,10 +228,16 @@ scene.setBackgroundImage(img`
     ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
     `)
 game.onUpdateInterval(1000, function () {
-    Enemy_Bonus(info.score())
+    Enemies(info.score())
 })
 forever(function () {
     if (info.score() == 1000) {
         game.over(true, effects.hearts)
+    }
+})
+forever(function () {
+    if (info.score() % 100 == 0 && info.score() != 0) {
+        Bonus()
+        ScoreChange(info.score())
     }
 })
