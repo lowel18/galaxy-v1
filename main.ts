@@ -1,3 +1,29 @@
+namespace SpriteKind {
+    export const item_cofre = SpriteKind.create()
+    export const items = SpriteKind.create()
+}
+function VidaExtra () {
+    cofre = sprites.create(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . b b b b b b b b b b . . . 
+        . . . b b b b b b b b b b . . . 
+        . . . b b b d d d d b b b . . . 
+        . . . d d d d f f d d d d . . . 
+        . . . b b b b f f b b b b . . . 
+        . . . b b b b b b b b b b . . . 
+        . . . b b b b b b b b b b . . . 
+        . . . b b b b b b b b b b . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, SpriteKind.item_cofre)
+    cofre.setPosition(randint(5, 120), 0)
+    cofre.setVelocity(0, 40)
+}
 function Enemies (MiScore: number) {
     Enemigo_1 = sprites.create(img`
         . . . . . . . . . . . . . . . . 
@@ -20,6 +46,11 @@ function Enemies (MiScore: number) {
     Enemigo_1.setPosition(randint(5, 120), 0)
     Enemigo_1.setVelocity(0, 25)
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.items, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    music.beamUp.play()
+    info.changeLifeBy(1)
+})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     Proyectil_1 = sprites.createProjectileFromSprite(img`
         . . . . . . . . . . . . . . . . 
@@ -43,7 +74,31 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.Projectile, function (sprite, otherSprite) {
     sprite.destroy(effects.starField, 100)
     otherSprite.destroy()
+    music.smallCrash.play()
     info.changeScoreBy(10)
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.item_cofre, function (sprite, otherSprite) {
+    otherSprite.destroy()
+    item = sprites.create(img`
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . 2 2 . 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . . 2 2 2 2 2 . . . . . . 
+        . . . . . . . 2 2 2 . . . . . . . 
+        . . . . . . . . 2 . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . . 
+        `, SpriteKind.items)
+    item.setVelocity(otherSprite.vx, otherSprite.vy)
+    item.setPosition(otherSprite.x, otherSprite.y)
 })
 function ScoreChange (MyScore: number) {
     while (MyScore == info.score()) {
@@ -77,27 +132,30 @@ function Bonus () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
     otherSprite.destroy(effects.spray, 500)
     info.changeLifeBy(-1)
+    music.bigCrash.play()
 })
 let Enemigo_2: Sprite = null
+let item: Sprite = null
 let Proyectil_1: Sprite = null
 let Enemigo_1: Sprite = null
+let cofre: Sprite = null
 let Nave1: Sprite = null
 Nave1 = sprites.create(img`
     . . . . . . . . . . . . . . . . 
-    . . . . . . f . f . . . . . . . 
-    . . . . . . f . f . . . . . . . 
-    . . . . f f 2 . 2 f f . . . . . 
-    . . . . . 2 3 f 3 2 . . . . . . 
-    . . . . . 3 2 f 2 3 . . . . . . 
-    . . . f . a 2 f 2 a . f . . . . 
-    . . . a a 3 a 2 a 3 a a . . . . 
-    . . f a a 3 2 a 2 3 a a f . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . 2 . 2 . . . . . . . 
+    . . . . . 2 2 . 2 2 . . . . . . 
+    . . . . . 2 3 . 3 2 . . . . . . 
+    . . . . . 3 2 2 2 3 . . . . . . 
+    . . . . . 2 2 2 2 2 . . . . . . 
+    . . . a a a 2 2 2 a a a . . . . 
+    . . a a a a 2 a 2 a a a a . . . 
     . . . . . 3 2 a 2 3 . . . . . . 
     . . . . 3 2 2 a 2 2 3 . . . . . 
-    . . . 3 2 2 3 a 3 2 2 3 . . . . 
-    . . . 3 f a a f a a f 3 . . . . 
-    . . . f . a f . f a . f . . . . 
-    . . . . . f . . . f . . . . . . 
+    . . . 3 2 2 2 2 2 2 2 3 . . . . 
+    . . . a a a a a a a a a . . . . 
+    . . . a . a a . a a . a . . . . 
+    . . . . . a . . . a . . . . . . 
     . . . . . . . . . . . . . . . . 
     `, SpriteKind.Player)
 Nave1.setStayInScreen(true)
@@ -231,7 +289,13 @@ game.onUpdateInterval(1000, function () {
     Enemies(info.score())
 })
 forever(function () {
-    if (info.score() == 1000) {
+    if (info.score() % 500 == 0 && info.score() != 0) {
+        VidaExtra()
+        ScoreChange(info.score())
+    }
+})
+forever(function () {
+    if (info.score() == 2000) {
         game.over(true, effects.hearts)
     }
 })
